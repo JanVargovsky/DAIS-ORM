@@ -12,7 +12,7 @@ namespace DAIS.ORM.Repositories
 
         public override bool Update(IssueTypeIssueStatusDTO @object)
         {
-            throw new ApplicationException("Not supported");
+            throw new NotSupportedException();
         }
     }
 }

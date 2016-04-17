@@ -1,5 +1,4 @@
-﻿using DAIS.ORM;
-using DAIS.ORM.DTO;
+﻿using DAIS.ORM.DTO;
 using DAIS.ORM.Framework;
 using DAIS.ORM.Repositories;
 using System;
@@ -23,7 +22,7 @@ namespace DAIS.ConsoleClient
 
         public Program()
         {
-            db = new Database(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=C:\USERS\JANVA\DOCUMENTS\DAIS-VAR0065.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            db = ConnectionManager.Instance.Create();
             issueRepo = new IssueRepository(db);
             issueTypeRepo = new IssueTypeRepository(db);
             issueStatusRepo = new IssueStatusRepository(db);
@@ -215,7 +214,7 @@ namespace DAIS.ConsoleClient
                 //p.SelectComments();
                 //p.SelectStatuses();
 
-                //var users = p.userRepo.Select().ToArray();
+                var users = p.userRepo.Select().ToArray();
             }
         }
     }

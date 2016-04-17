@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIS.ORM", "DAIS.ORM\DAIS.ORM.csproj", "{D6249D3C-4D96-489C-A6D6-3F674815D559}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIS.ORM.Framework", "DAIS.ORM.Framework\DAIS.ORM.Framework.csproj", "{609BEB61-C815-4846-A423-E10E79D07F3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIS.ConsoleClient", "DAIS.ConsoleClient\DAIS.ConsoleClient.csproj", "{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6249D3C-4D96-489C-A6D6-3F674815D559}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6249D3C-4D96-489C-A6D6-3F674815D559}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6249D3C-4D96-489C-A6D6-3F674815D559}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6249D3C-4D96-489C-A6D6-3F674815D559}.Release|Any CPU.Build.0 = Release|Any CPU
+		{609BEB61-C815-4846-A423-E10E79D07F3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{609BEB61-C815-4846-A423-E10E79D07F3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{609BEB61-C815-4846-A423-E10E79D07F3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{609BEB61-C815-4846-A423-E10E79D07F3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

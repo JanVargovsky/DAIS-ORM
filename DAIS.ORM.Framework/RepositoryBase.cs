@@ -17,7 +17,7 @@ namespace DAIS.ORM.Framework
 
         // Read
         IEnumerable<TModel> Select();
-        TModel Select(object id);
+        TModel Select(params object[] ids);
 
         // Update
         bool Update(TModel @object);
@@ -29,7 +29,7 @@ namespace DAIS.ORM.Framework
     }
 
     public class RepositoryBase<TModel> : IRepositoryBase<TModel>
-        where TModel : new()
+        where TModel : class, new()
     {
         private readonly IDatabase database;
         private readonly Type modelType;
@@ -72,31 +72,31 @@ namespace DAIS.ORM.Framework
             if (pks.Length != ids.Length)
                 throw new ArgumentException("Different count of primary keys");
 
+            // set value of attribute to that from parameter
+            for (int i = 0; i < ids.Length; i++)
+                pks[i].Value = ids[i];
+
             var softDeleteAttribute = attributes.FirstOrDefault(t => t.DeleteIndicator);
 
             if (softDeleteAttribute != null)
             {
                 softDeleteAttribute.Value = true;
-                for (int i = 0; i < ids.Length; i++)
-                    pks[i].Value = ids[i];
-
                 return LogicalDelete(softDeleteAttribute, pks);
             }
             else
-                return PhysicalDelete();
+                return PhysicalDelete(pks);
         }
 
         private bool LogicalDelete(AttributeValues softDeleteAttribute, params AttributeValues[] pks)
         {
             try
             {
-                database.Open();
-
                 StringBuilder query = new StringBuilder()
                     .AppendLine($"UPDATE [{tableName}]")
                     .AppendLine($"SET {softDeleteAttribute.ToSqlUpdateParam()}")
                     .AppendLine($"WHERE {pks.ToSqlWhereParams()};");
 
+                database.Open();
                 using (var command = database.CreateSqlCommand(query.ToString()))
                 {
                     FillParameterWithValue(command, softDeleteAttribute);
@@ -117,23 +117,45 @@ namespace DAIS.ORM.Framework
             }
         }
 
-        private bool PhysicalDelete()
+        private bool PhysicalDelete(params AttributeValues[] pks)
         {
-            return false;
+            try
+            {
+                StringBuilder query = new StringBuilder()
+                    .AppendLine($"DELETE FROM [{tableName}]")
+                    .AppendLine($"WHERE {pks.ToSqlWhereParams()};");
+
+                database.Open();
+                using (var command = database.CreateSqlCommand(query.ToString()))
+                {
+                    FillParametersWithValues(command, pks);
+
+                    int result = command.ExecuteNonQuery();
+
+                    return result == 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
         }
 
         public virtual bool Insert(TModel @object)
         {
             try
             {
-                database.Open();
-
                 var attributes = @object.GetAttributeNameValues();
 
                 StringBuilder query = new StringBuilder()
                     .AppendLine($"INSERT INTO [{tableName}]({attributes.ToSqlNameParams()})")
                     .AppendLine($"VALUES ({attributes.ToSqlParamNames()});");
 
+                database.Open();
                 using (var command = database.CreateSqlCommand(query.ToString()))
                 {
                     FillParametersWithValues(command, attributes);
@@ -155,17 +177,132 @@ namespace DAIS.ORM.Framework
 
         public virtual IEnumerable<TModel> Select()
         {
-            throw new NotImplementedException();
+            var results = new List<TModel>();
+
+            try
+            {
+                var attributes = modelType.GetAttributeNameValues();
+
+                StringBuilder query = new StringBuilder()
+                    .AppendLine($"SELECT {attributes.ToSqlNameParams()}")
+                    .AppendLine($"FROM [{tableName}];");
+
+                database.Open();
+                using (var command = database.CreateSqlCommand(query.ToString()))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        // TODO: Cache property info
+                        while (reader.Read())
+                            results.Add(CreateModelFromReader(reader, attributes));
+
+                        return results;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
         }
 
-        public virtual TModel Select(object id)
+        public virtual TModel Select(params object[] ids)
         {
-            throw new NotImplementedException();
+            if (ids.Length == 0)
+                throw new ArgumentException($"{nameof(ids)} is missing");
+
+            try
+            {
+                var attributes = modelType.GetAttributeNameValues();
+                var pks = attributes.Where(a => a.Type == ColumnType.PrimaryKey).ToArray();
+
+                if (pks.Length != ids.Length)
+                    throw new ArgumentException("Different count of primary keys");
+
+                StringBuilder query = new StringBuilder()
+                    .AppendLine($"SELECT {attributes.ToSqlNameParams()}")
+                    .AppendLine($"FROM [{tableName}]")
+                    .AppendLine($"WHERE {pks.ToSqlWhereParams()};");
+
+                // set value of attribute to that from parameter
+                for (int i = 0; i < ids.Length; i++)
+                    pks[i].Value = ids[i];
+
+                database.Open();
+                using (var command = database.CreateSqlCommand(query.ToString()))
+                {
+                    FillParametersWithValues(command, pks);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            return null;
+
+                        return CreateModelFromReader(reader, attributes);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
+        }
+
+        private TModel CreateModelFromReader(SqlDataReader reader, IEnumerable<AttributeValues> attributes)
+        {
+            TModel result = new TModel();
+
+            int i = 0;
+            foreach (var attr in attributes)
+            {
+                var value = reader.GetValue(i++);
+                if (value != DBNull.Value)
+                    modelType.GetProperty(attr.PropertyName).SetValue(result, value);
+            }
+
+            return result;
         }
 
         public virtual bool Update(TModel @object)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var attributes = @object.GetAttributeNameValues();
+                var pks = attributes.Where(a => a.Type == ColumnType.PrimaryKey);
+                var updateAttributes = attributes.Where(a => a.Type != ColumnType.PrimaryKey);
+
+                StringBuilder query = new StringBuilder()
+                    .AppendLine($"UPDATE [{tableName}]")
+                    .AppendLine($"SET {updateAttributes.ToSqlUpdateParams()}")
+                    .AppendLine($"WHERE {pks.ToSqlWhereParams()};");
+
+                database.Open();
+                using (var command = database.CreateSqlCommand(query.ToString()))
+                {
+                    FillParametersWithValues(command, updateAttributes);
+                    FillParametersWithValues(command, pks);
+
+                    int result = command.ExecuteNonQuery();
+
+                    return result == 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
         }
 
         private void FillParameterWithValue(SqlCommand command, AttributeValues attr)

@@ -115,12 +115,17 @@ namespace DAIS.ConsoleClient
             issueWorkflowRepo.Insert(workflow);
         }
 
+        private static void DeleteWorkflow()
+        {
+            issueWorkflowRepo.Delete(1);
+        }
+
         private static void InsertComment()
         {
             CommentDTO comment = new CommentDTO
             {
                 CreatedAt = DateTime.Now,
-                Id = 1,
+                Id = 2,
                 IsDeleted = false,
                 IssueId = 1,
                 Text = "Some comment's text",
@@ -137,9 +142,49 @@ namespace DAIS.ConsoleClient
             commentRepo.Delete(1);
         }
 
+        private static void UpdateComment()
+        {
+            CommentDTO comment = new CommentDTO
+            {
+                CreatedAt = DateTime.Now,
+                Id = 1,
+                IsDeleted = false,
+                IssueId = 1,
+                Text = "Some comment's text - updated at " + DateTime.Now.ToShortTimeString(),
+                UserId = 1,
+                CommentId = null,
+            };
+            commentRepo.Update(comment);
+        }
+
+        private static void PrintComment(params CommentDTO[] comments)
+        {
+            foreach (var c in comments)
+                WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
+        }
+
+        private static void SelectComment()
+        {
+            CommentDTO c = commentRepo.Select(1);
+            WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
+        }
+
+        private static void SelectComments()
+        {
+            var comments = commentRepo.Select();
+            foreach (var c in comments)
+                WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
+        }
+
+        private static void SelectStatuses()
+        {
+            var statuses = issueStatusRepo.Select();
+            foreach (var status in statuses)
+                WriteLine($"{status.Id} - {status.IssueType}");
+        }
+
         static void Main(string[] args)
         {
-            // INSERTS
             //InsertIssueType();
             //InsertUser();
             //InsertStatusType();
@@ -148,9 +193,14 @@ namespace DAIS.ConsoleClient
             //InsertIssueWorkflow();
             //InsertComment();
 
-            // Deletes
-            InsertComment();
-            DeleteComment();
+            //InsertComment();
+            //DeleteComment();
+            //DeleteWorkflow();
+
+            //UpdateComment();
+            //SelectComment();
+            //SelectComments();
+            SelectStatuses();
         }
     }
 }

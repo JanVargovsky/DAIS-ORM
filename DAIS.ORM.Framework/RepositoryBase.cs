@@ -153,6 +153,8 @@ namespace DAIS.ORM.Framework
         {
             try
             {
+                // TODO: Add autoincrement value to PK
+
                 var attributes = @object.GetAttributeNameValues();
 
                 StringBuilder query = new StringBuilder()

@@ -13,6 +13,7 @@ namespace DAIS.ORM.Framework
         public object Value { get; set; }
         public Type ValueType { get; set; }
         public ColumnType Type { get; set; }
+        public bool DeleteIndicator { get; set; }
 
         public string ParameterName => "@" + PropertyName;
 
@@ -74,6 +75,28 @@ namespace DAIS.ORM.Framework
                         Value = pi.GetValue(@object),
                         ValueType = pi.PropertyType.IsNullable() ? Nullable.GetUnderlyingType(pi.PropertyType) : pi.PropertyType,
                         Type = columnAttribute.Type,
+                        DeleteIndicator = columnAttribute.DeleteIndicator
+                    };
+            }
+        }
+
+        internal static IEnumerable<AttributeValues> GetAttributeNameValues(this Type type)
+        {
+            var properties = type
+                .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+            foreach (var pi in properties)
+            {
+                var columnAttribute = pi.GetCustomAttribute<ColumnAttribute>();
+
+                if (columnAttribute != null)
+                    yield return new AttributeValues
+                    {
+                        AttributeName = columnAttribute.Name,
+                        PropertyName = pi.Name,
+                        ValueType = pi.PropertyType.IsNullable() ? Nullable.GetUnderlyingType(pi.PropertyType) : pi.PropertyType,
+                        Type = columnAttribute.Type,
+                        DeleteIndicator = columnAttribute.DeleteIndicator
                     };
             }
         }
@@ -91,6 +114,21 @@ namespace DAIS.ORM.Framework
         internal static string ToSqlParamNames(this IEnumerable<AttributeValues> collection)
         {
             return string.Join(", ", collection.Select(a => a.ParameterName));
+        }
+
+        internal static string ToSqlWhereParams(this IEnumerable<AttributeValues> collection)
+        {
+            return string.Join(" AND ", collection.Select(ToSqlUpdateParam));
+        }
+
+        internal static string ToSqlUpdateParams(this IEnumerable<AttributeValues> collection)
+        {
+            return string.Join(", ", collection.Select(ToSqlUpdateParam));
+        }
+
+        internal static string ToSqlUpdateParam(this AttributeValues value)
+        {
+            return $"{value.AttributeName} = {value.ParameterName}";
         }
     }
 }

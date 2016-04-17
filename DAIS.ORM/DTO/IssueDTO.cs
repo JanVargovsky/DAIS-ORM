@@ -27,7 +27,7 @@ namespace DAIS.ORM.DTO
         [Column("time_estimated")]
         public long EstimatedTime { get; set; }
 
-        [Column("deleted")]
+        [Column("deleted", DeleteIndicator = true)]
         public bool IsDeleted { get; set; }
 
 

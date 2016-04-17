@@ -27,7 +27,7 @@ namespace DAIS.ORM.DTO
         [Column("surname")]
         public string Surname { get; set; }
 
-        [Column("deleted")]
+        [Column("deleted", DeleteIndicator = true)]
         public bool IsDeleted { get; set; }
 
         public string PasswordString

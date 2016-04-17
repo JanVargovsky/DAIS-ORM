@@ -17,7 +17,7 @@ namespace DAIS.ORM.DTO
         [Column("name")]
         public string Name { get; set; }
 
-        [Column("deleted")]
+        [Column("deleted", DeleteIndicator = true)]
         public bool IsDeleted { get; set; }
 
         public IssueType IssueType

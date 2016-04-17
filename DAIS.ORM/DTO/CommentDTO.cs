@@ -15,7 +15,7 @@ namespace DAIS.ORM.DTO
         [Column("text")]
         public string Text { get; set; }
 
-        [Column("deleted")]
+        [Column("deleted", DeleteIndicator = true)]
         public bool IsDeleted { get; set; }
 
         [Column("user_id", ColumnType.ForeignKey)]

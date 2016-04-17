@@ -23,7 +23,7 @@ namespace DAIS.ORM.Framework
         bool Update(TModel @object);
 
         // Delete
-        bool Delete(object id);
+        bool Delete(params object[] ids);
         bool Delete(TModel @object);
 
     }
@@ -53,12 +53,73 @@ namespace DAIS.ORM.Framework
 
         public virtual bool Delete(TModel @object)
         {
-            throw new NotImplementedException();
+            var pks = modelType
+                .GetAttributeNameValues()
+                .Where(a => a.Type == ColumnType.PrimaryKey)
+                .Select(a => a.Value);
+
+            return Delete(pks);
         }
 
-        public virtual bool Delete(object id)
+        public virtual bool Delete(params object[] ids)
         {
-            throw new NotImplementedException();
+            if (ids.Length == 0)
+                throw new ArgumentException($"{nameof(ids)} is missing");
+
+            var attributes = modelType.GetAttributeNameValues().ToArray();
+            var pks = attributes.Where(a => a.Type == ColumnType.PrimaryKey).ToArray();
+
+            if (pks.Length != ids.Length)
+                throw new ArgumentException("Different count of primary keys");
+
+            var softDeleteAttribute = attributes.FirstOrDefault(t => t.DeleteIndicator);
+
+            if (softDeleteAttribute != null)
+            {
+                softDeleteAttribute.Value = true;
+                for (int i = 0; i < ids.Length; i++)
+                    pks[i].Value = ids[i];
+
+                return LogicalDelete(softDeleteAttribute, pks);
+            }
+            else
+                return PhysicalDelete();
+        }
+
+        private bool LogicalDelete(AttributeValues softDeleteAttribute, params AttributeValues[] pks)
+        {
+            try
+            {
+                database.Open();
+
+                StringBuilder query = new StringBuilder()
+                    .AppendLine($"UPDATE [{tableName}]")
+                    .AppendLine($"SET {softDeleteAttribute.ToSqlUpdateParam()}")
+                    .AppendLine($"WHERE {pks.ToSqlWhereParams()};");
+
+                using (var command = database.CreateSqlCommand(query.ToString()))
+                {
+                    FillParameterWithValue(command, softDeleteAttribute);
+                    FillParametersWithValues(command, pks);
+
+                    int result = command.ExecuteNonQuery();
+
+                    return result == 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
+        }
+
+        private bool PhysicalDelete()
+        {
+            return false;
         }
 
         public virtual bool Insert(TModel @object)
@@ -67,7 +128,7 @@ namespace DAIS.ORM.Framework
             {
                 database.Open();
 
-                var attributes = @object.GetAttributeNameValues().ToArray();
+                var attributes = @object.GetAttributeNameValues();
 
                 StringBuilder query = new StringBuilder()
                     .AppendLine($"INSERT INTO [{tableName}]({attributes.ToSqlNameParams()})")
@@ -107,22 +168,25 @@ namespace DAIS.ORM.Framework
             throw new NotImplementedException();
         }
 
+        private void FillParameterWithValue(SqlCommand command, AttributeValues attr)
+        {
+            if (attr.Value == null)
+            {
+                var sqlParameter = new SqlParameter(attr.ParameterName, typeMap[attr.ValueType])
+                {
+                    Value = DBNull.Value
+                };
+                command.Parameters.Add(sqlParameter);
+            }
+            else
+                command.Parameters.AddWithValue(attr.ParameterName, attr.Value);
+        }
+
         #endregion
         private void FillParametersWithValues(SqlCommand command, IEnumerable<AttributeValues> attributes)
         {
             foreach (var attr in attributes)
-            {
-                if (attr.Value == null)
-                {
-                    var sqlParameter = new SqlParameter(attr.ParameterName, typeMap[attr.ValueType])
-                    {
-                        Value = DBNull.Value
-                    };
-                    command.Parameters.Add(sqlParameter);
-                }
-                else
-                    command.Parameters.AddWithValue(attr.ParameterName, attr.Value);
-            }
+                FillParameterWithValue(command, attr);
         }
 
         private void TypeMapInitialize()

@@ -27,7 +27,7 @@ namespace DAIS.ORM.DTO
         [Column("value")]
         public int Value { get; set; }
 
-        [Column("deleted")]
+        [Column("deleted", DeleteIndicator = true)]
         public bool IsDeleted { get; set; }
 
         public IssuePriority IssuePriority

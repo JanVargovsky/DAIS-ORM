@@ -132,6 +132,11 @@ namespace DAIS.ConsoleClient
             commentRepo.Insert(comment);
         }
 
+        private static void DeleteComment()
+        {
+            commentRepo.Delete(1);
+        }
+
         static void Main(string[] args)
         {
             // INSERTS
@@ -140,11 +145,12 @@ namespace DAIS.ConsoleClient
             //InsertStatusType();
             //InsertIssueTypeIssueStatus();
             //IssueInsert();
-            InsertIssueWorkflow();
+            //InsertIssueWorkflow();
             //InsertComment();
 
             // Deletes
-
+            InsertComment();
+            DeleteComment();
         }
     }
 }

@@ -14,11 +14,18 @@ namespace DAIS.ConsoleClient
 {
     internal class Program
     {
-        static IDatabase db;
+        private static IDatabase db = new Database(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=C:\USERS\JANVA\DOCUMENTS\DAIS-VAR0065.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+        private static IssueRepository issueRepo = new IssueRepository(db);
+        private static IssueTypeRepository issueTypeRepo = new IssueTypeRepository(db);
+        private static IssueStatusRepository issueStatusRepo = new IssueStatusRepository(db);
+        private static UserRepository userRepo = new UserRepository(db);
+        private static IssueTypeIssueStatusRepository issueTypeIssueStatusRepo = new IssueTypeIssueStatusRepository(db);
+        private static IssueWorkflowRepository issueWorkflowRepo = new IssueWorkflowRepository(db);
+        private static CommentRepository commentRepo = new CommentRepository(db);
+
 
         private static void IssueInsert()
         {
-            // (1, 'summary ...', 'description ...', SYSDATETIME(), null, 1000, 1000, 0, null, 1, null, 1, 1, 1);
             IssueDTO issue = new IssueDTO
             {
                 Id = 2,
@@ -37,8 +44,7 @@ namespace DAIS.ConsoleClient
                 CreatedBy = 1,
             };
 
-            IssueRepository repo = new IssueRepository(db);
-            repo.Insert(issue);
+            issueRepo.Insert(issue);
         }
 
         private static void InsertIssueType()
@@ -49,8 +55,8 @@ namespace DAIS.ConsoleClient
                 IsDeleted = false,
                 Name = "Epic",
             };
-            IssueTypeRepository repo = new IssueTypeRepository(db);
-            repo.Insert(issueType);
+
+            issueTypeRepo.Insert(issueType);
         }
 
         private static void InsertStatusType()
@@ -60,8 +66,8 @@ namespace DAIS.ConsoleClient
                 IsDeleted = false,
                 IssueType = IssueStatus.Testing,
             };
-            IssueStatusRepository repo = new IssueStatusRepository(db);
-            repo.Insert(issueType);
+
+            issueStatusRepo.Insert(issueType);
         }
 
         private static void InsertUser()
@@ -77,8 +83,8 @@ namespace DAIS.ConsoleClient
                 Email = "jmeno.prijmeni@domena.x",
                 UserName = "username",
             };
-            UserRepository repo = new UserRepository(db);
-            repo.Insert(user);
+
+            userRepo.Insert(user);
         }
 
         private static void InsertIssueTypeIssueStatus()
@@ -89,15 +95,15 @@ namespace DAIS.ConsoleClient
                 IssueStatus = IssueStatus.Testing,
             };
 
-            IssueTypeIssueStatusRepository repo = new IssueTypeIssueStatusRepository(db);
-            repo.Insert(typeStatus);
+
+            issueTypeIssueStatusRepo.Insert(typeStatus);
         }
 
         private static void InsertIssueWorkflow()
         {
             IssueWorkflowDTO workflow = new IssueWorkflowDTO
             {
-                Id = 1,
+                Id = 2,
                 CreatedAt = DateTime.Now,
                 IssueId = 1,
                 IssueStatusId = 2,
@@ -105,8 +111,8 @@ namespace DAIS.ConsoleClient
                 UserId = 1,
             };
 
-            IssueWorkflowRepository repo = new IssueWorkflowRepository(db);
-            repo.Insert(workflow);
+
+            issueWorkflowRepo.Insert(workflow);
         }
 
         private static void InsertComment()
@@ -122,25 +128,23 @@ namespace DAIS.ConsoleClient
                 CommentId = null,
             };
 
-            CommentRepository repo = new CommentRepository(db);
-            repo.Insert(comment);
+
+            commentRepo.Insert(comment);
         }
 
         static void Main(string[] args)
         {
-            db = new Database(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=C:\USERS\JANVA\DOCUMENTS\DAIS-VAR0065.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-
             // INSERTS
             //InsertIssueType();
             //InsertUser();
             //InsertStatusType();
             //InsertIssueTypeIssueStatus();
             //IssueInsert();
-            //InsertIssueWorkflow();
+            InsertIssueWorkflow();
             //InsertComment();
 
             // Deletes
-            
+
         }
     }
 }

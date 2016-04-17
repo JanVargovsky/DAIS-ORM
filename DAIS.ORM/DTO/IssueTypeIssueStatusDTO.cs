@@ -6,10 +6,10 @@ namespace DAIS.ORM.DTO
     [TableName("issue_type_issue_status")]
     public class IssueTypeIssueStatusDTO
     {
-        [Column("issue_status_id", ColumnType.PrimaryKey)]
+        [Column("issue_status_id", ColumnType.PrimaryKey | ColumnType.ForeignKey)]
         public long IssueStatusId { get; set; }
 
-        [Column("issue_type_id", ColumnType.PrimaryKey)]
+        [Column("issue_type_id", ColumnType.PrimaryKey | ColumnType.ForeignKey)]
         public long IssueTypeId { get; set; }
 
         public IssueStatus IssueStatus

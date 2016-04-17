@@ -18,6 +18,7 @@ namespace DAIS.ORM.Framework
         // Read
         IEnumerable<TModel> Select();
         TModel Select(params object[] ids);
+        // TODO: Select by an expression?
 
         // Update
         bool Update(TModel @object);
@@ -51,6 +52,7 @@ namespace DAIS.ORM.Framework
 
         #region IRepositoryBase
 
+        #region Delete
         public virtual bool Delete(TModel @object)
         {
             var pks = modelType
@@ -145,6 +147,10 @@ namespace DAIS.ORM.Framework
             }
         }
 
+        #endregion
+
+        #region Insert
+
         public virtual bool Insert(TModel @object)
         {
             try
@@ -174,6 +180,10 @@ namespace DAIS.ORM.Framework
                 database.Close();
             }
         }
+
+        #endregion
+
+        #region Select
 
         public virtual IEnumerable<TModel> Select()
         {
@@ -271,6 +281,10 @@ namespace DAIS.ORM.Framework
             return result;
         }
 
+        #endregion
+
+        #region Update
+
         public virtual bool Update(TModel @object)
         {
             try
@@ -305,6 +319,10 @@ namespace DAIS.ORM.Framework
             }
         }
 
+        #endregion
+
+        #region Helper methods of SqlCommand
+
         private void FillParameterWithValue(SqlCommand command, AttributeValues attr)
         {
             if (attr.Value == null)
@@ -319,12 +337,15 @@ namespace DAIS.ORM.Framework
                 command.Parameters.AddWithValue(attr.ParameterName, attr.Value);
         }
 
-        #endregion
         private void FillParametersWithValues(SqlCommand command, IEnumerable<AttributeValues> attributes)
         {
             foreach (var attr in attributes)
                 FillParameterWithValue(command, attr);
         }
+
+        #endregion
+
+        #endregion
 
         private void TypeMapInitialize()
         {
@@ -362,7 +383,6 @@ namespace DAIS.ORM.Framework
             typeMap[typeof(Guid?)] = DbType.Guid;
             typeMap[typeof(DateTime?)] = DbType.DateTime;
             typeMap[typeof(DateTimeOffset?)] = DbType.DateTimeOffset;
-            typeMap[typeof(byte[])] = DbType.Binary;
         }
     }
 }

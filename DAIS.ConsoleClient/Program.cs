@@ -201,6 +201,8 @@ namespace DAIS.ConsoleClient
             //SelectComment();
             //SelectComments();
             SelectStatuses();
+
+            var users = userRepo.Select().ToArray();
         }
     }
 }

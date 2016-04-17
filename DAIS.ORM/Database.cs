@@ -14,6 +14,8 @@ namespace DAIS.ORM
                 throw new ArgumentNullException(nameof(connectionString));
 
             connection = new SqlConnection(connectionString);
+
+            connection.InfoMessage += (o,e) => Console.WriteLine(e.Message);
         }
 
         public void Open() => connection.Open();

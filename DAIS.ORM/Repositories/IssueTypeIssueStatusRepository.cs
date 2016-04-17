@@ -1,5 +1,6 @@
 ﻿using DAIS.ORM.DTO;
 using DAIS.ORM.Framework;
+using System;
 
 namespace DAIS.ORM.Repositories
 {
@@ -7,6 +8,11 @@ namespace DAIS.ORM.Repositories
     {
         public IssueTypeIssueStatusRepository(IDatabase db) : base(db)
         {
+        }
+
+        public override bool Update(IssueTypeIssueStatusDTO @object)
+        {
+            throw new ApplicationException("Not supported");
         }
     }
 }

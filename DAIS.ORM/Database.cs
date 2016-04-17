@@ -15,7 +15,7 @@ namespace DAIS.ORM
 
             connection = new SqlConnection(connectionString);
 
-            connection.InfoMessage += (o,e) => Console.WriteLine(e.Message);
+            connection.InfoMessage += (o, e) => Console.WriteLine(e.Message);
         }
 
         public void Open() => connection.Open();
@@ -23,5 +23,14 @@ namespace DAIS.ORM
         public void Close() => connection.Close();
 
         public SqlCommand CreateSqlCommand(string sql = "") => new SqlCommand(sql, connection);
+
+        public void Dispose()
+        {
+            if (connection != null)
+            {
+                connection.Close();
+                connection.Dispose();
+            }
+        }
     }
 }

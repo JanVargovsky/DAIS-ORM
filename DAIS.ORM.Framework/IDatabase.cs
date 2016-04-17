@@ -1,8 +1,9 @@
-﻿using System.Data.SqlClient;
+﻿using System;
+using System.Data.SqlClient;
 
 namespace DAIS.ORM.Framework
 {
-    public interface IDatabase
+    public interface IDatabase : IDisposable
     {
         void Open();
         void Close();

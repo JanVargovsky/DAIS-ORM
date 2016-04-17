@@ -10,19 +10,32 @@ using static System.Console;
 
 namespace DAIS.ConsoleClient
 {
-    internal class Program
+    internal class Program : IDisposable
     {
-        private static IDatabase db = new Database(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=C:\USERS\JANVA\DOCUMENTS\DAIS-VAR0065.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
-        private static IssueRepository issueRepo = new IssueRepository(db);
-        private static IssueTypeRepository issueTypeRepo = new IssueTypeRepository(db);
-        private static IssueStatusRepository issueStatusRepo = new IssueStatusRepository(db);
-        private static UserRepository userRepo = new UserRepository(db);
-        private static IssueTypeIssueStatusRepository issueTypeIssueStatusRepo = new IssueTypeIssueStatusRepository(db);
-        private static IssueWorkflowRepository issueWorkflowRepo = new IssueWorkflowRepository(db);
-        private static CommentRepository commentRepo = new CommentRepository(db);
+        private readonly IDatabase db;
+        private readonly IssueRepository issueRepo;
+        private readonly IssueTypeRepository issueTypeRepo;
+        private readonly IssueStatusRepository issueStatusRepo;
+        private readonly UserRepository userRepo;
+        private readonly IssueTypeIssueStatusRepository issueTypeIssueStatusRepo;
+        private readonly IssueWorkflowRepository issueWorkflowRepo;
+        private readonly CommentRepository commentRepo;
 
+        public Program()
+        {
+            db = new Database(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=C:\USERS\JANVA\DOCUMENTS\DAIS-VAR0065.MDF;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            issueRepo = new IssueRepository(db);
+            issueTypeRepo = new IssueTypeRepository(db);
+            issueStatusRepo = new IssueStatusRepository(db);
+            userRepo = new UserRepository(db);
+            issueTypeIssueStatusRepo = new IssueTypeIssueStatusRepository(db);
+            issueWorkflowRepo = new IssueWorkflowRepository(db);
+            commentRepo = new CommentRepository(db);
+        }
 
-        private static void IssueInsert()
+        public void Dispose() => db.Dispose();
+
+        private void IssueInsert()
         {
             IssueDTO issue = new IssueDTO
             {
@@ -45,7 +58,7 @@ namespace DAIS.ConsoleClient
             issueRepo.Insert(issue);
         }
 
-        private static void InsertIssueType()
+        private void InsertIssueType()
         {
             IssueTypeDTO issueType = new IssueTypeDTO
             {
@@ -57,7 +70,7 @@ namespace DAIS.ConsoleClient
             issueTypeRepo.Insert(issueType);
         }
 
-        private static void InsertStatusType()
+        private void InsertStatusType()
         {
             IssueStatusDTO issueType = new IssueStatusDTO
             {
@@ -68,7 +81,7 @@ namespace DAIS.ConsoleClient
             issueStatusRepo.Insert(issueType);
         }
 
-        private static void InsertUser()
+        private void InsertUser()
         {
             UserDTO user = new UserDTO
             {
@@ -85,7 +98,7 @@ namespace DAIS.ConsoleClient
             userRepo.Insert(user);
         }
 
-        private static void InsertIssueTypeIssueStatus()
+        private void InsertIssueTypeIssueStatus()
         {
             IssueTypeIssueStatusDTO typeStatus = new IssueTypeIssueStatusDTO
             {
@@ -97,7 +110,7 @@ namespace DAIS.ConsoleClient
             issueTypeIssueStatusRepo.Insert(typeStatus);
         }
 
-        private static void InsertIssueWorkflow()
+        private void InsertIssueWorkflow()
         {
             IssueWorkflowDTO workflow = new IssueWorkflowDTO
             {
@@ -113,12 +126,12 @@ namespace DAIS.ConsoleClient
             issueWorkflowRepo.Insert(workflow);
         }
 
-        private static void DeleteWorkflow()
+        private void DeleteWorkflow()
         {
             issueWorkflowRepo.Delete(1);
         }
 
-        private static void InsertComment()
+        private void InsertComment()
         {
             CommentDTO comment = new CommentDTO
             {
@@ -135,12 +148,12 @@ namespace DAIS.ConsoleClient
             commentRepo.Insert(comment);
         }
 
-        private static void DeleteComment()
+        private void DeleteComment()
         {
             commentRepo.Delete(1);
         }
 
-        private static void UpdateComment()
+        private void UpdateComment()
         {
             CommentDTO comment = new CommentDTO
             {
@@ -155,26 +168,26 @@ namespace DAIS.ConsoleClient
             commentRepo.Update(comment);
         }
 
-        private static void PrintComment(params CommentDTO[] comments)
+        private void PrintComment(params CommentDTO[] comments)
         {
             foreach (var c in comments)
                 WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
         }
 
-        private static void SelectComment()
+        private void SelectComment()
         {
             CommentDTO c = commentRepo.Select(1);
             WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
         }
 
-        private static void SelectComments()
+        private void SelectComments()
         {
             var comments = commentRepo.Select();
             foreach (var c in comments)
                 WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
         }
 
-        private static void SelectStatuses()
+        private void SelectStatuses()
         {
             var statuses = issueStatusRepo.Select();
             foreach (var status in statuses)
@@ -183,24 +196,27 @@ namespace DAIS.ConsoleClient
 
         static void Main(string[] args)
         {
-            //InsertIssueType();
-            //InsertUser();
-            //InsertStatusType();
-            //InsertIssueTypeIssueStatus();
-            //IssueInsert();
-            //InsertIssueWorkflow();
-            //InsertComment();
+            using (Program p = new Program())
+            {
+                //p.InsertIssueType();
+                //p.InsertUser();
+                //p.InsertStatusType();
+                //p.InsertIssueTypeIssueStatus();
+                //p.IssueInsert();
+                //p.InsertIssueWorkflow();
+                //p.InsertComment();
 
-            //InsertComment();
-            //DeleteComment();
-            //DeleteWorkflow();
+                //p.InsertComment();
+                //p.DeleteComment();
+                //p.DeleteWorkflow();
 
-            //UpdateComment();
-            //SelectComment();
-            //SelectComments();
-            SelectStatuses();
+                //p.UpdateComment();
+                //p.SelectComment();
+                //p.SelectComments();
+                //p.SelectStatuses();
 
-            var users = userRepo.Select().ToArray();
+                //var users = p.userRepo.Select().ToArray();
+            }
         }
     }
 }

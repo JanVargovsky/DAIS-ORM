@@ -8,5 +8,8 @@ namespace DAIS.ORM.Framework
         void Open();
         void Close();
         SqlCommand CreateSqlCommand(string sql = "");
+
+        //void BeginTransaction();
+        //void EndTransaction();
     }
 }

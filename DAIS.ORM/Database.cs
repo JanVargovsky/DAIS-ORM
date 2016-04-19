@@ -1,5 +1,6 @@
 ﻿using DAIS.ORM.Framework;
 using System;
+using System.Data;
 using System.Data.SqlClient;
 
 namespace DAIS.ORM
@@ -28,7 +29,8 @@ namespace DAIS.ORM
         {
             if (connection != null)
             {
-                connection.Close();
+                if (connection.State != ConnectionState.Closed)
+                    connection.Close();
                 connection.Dispose();
             }
         }

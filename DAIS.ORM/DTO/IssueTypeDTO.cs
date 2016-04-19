@@ -5,7 +5,8 @@ namespace DAIS.ORM.DTO
 {
     public enum IssueType
     {
-        Task = 1,
+        Epic = 1,
+        Task = 2,
     }
 
     [TableName("issue_type")]
@@ -23,7 +24,21 @@ namespace DAIS.ORM.DTO
         public IssueType IssueType
         {
             get { return (IssueType)Enum.ToObject(typeof(IssueType), Id); }
-            set { Id = (long)value; }
+            set
+            {
+                Id = (long)value;
+                switch (value)
+                {
+                    case IssueType.Epic:
+                        Name = "Epic";
+                        break;
+                    case IssueType.Task:
+                        Name = "Task";
+                        break;
+                    default:
+                        break;
+                }
+            }
         }
     }
 }

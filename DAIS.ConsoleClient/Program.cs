@@ -4,7 +4,7 @@ using DAIS.ORM.Repositories;
 using System;
 using System.Linq;
 using System.Text;
-
+using System.Transactions;
 using static System.Console;
 
 namespace DAIS.ConsoleClient
@@ -19,6 +19,7 @@ namespace DAIS.ConsoleClient
         private readonly IssueTypeIssueStatusRepository issueTypeIssueStatusRepo;
         private readonly IssueWorkflowRepository issueWorkflowRepo;
         private readonly CommentRepository commentRepo;
+        private readonly IssuePriorityRepository issuePriorityRepo;
 
         public Program()
         {
@@ -30,6 +31,7 @@ namespace DAIS.ConsoleClient
             issueTypeIssueStatusRepo = new IssueTypeIssueStatusRepository(db);
             issueWorkflowRepo = new IssueWorkflowRepository(db);
             commentRepo = new CommentRepository(db);
+            issuePriorityRepo = new IssuePriorityRepository(db);
         }
 
         public void Dispose() => db.Dispose();
@@ -38,10 +40,9 @@ namespace DAIS.ConsoleClient
         {
             IssueDTO issue = new IssueDTO
             {
-                Id = 2,
-                Summary = "Summary ...",
-                Description = "Description ...",
-                Created = DateTime.Now,
+                Summary = "Summary #3 ...",
+                Description = "Description #3 ...",
+                Created = DateTime.Now.AddDays(10),
                 LastUpdatedAt = null,
                 RemainingTimeTicks = TimeSpan.FromMinutes(2).Ticks,
                 EstimatedTime = TimeSpan.FromMinutes(2).Ticks,
@@ -61,7 +62,6 @@ namespace DAIS.ConsoleClient
         {
             IssueTypeDTO issueType = new IssueTypeDTO
             {
-                Id = 2,
                 IsDeleted = false,
                 Name = "Epic",
             };
@@ -84,7 +84,6 @@ namespace DAIS.ConsoleClient
         {
             UserDTO user = new UserDTO
             {
-                Id = 2,
                 FirstName = "Jmeno",
                 Surname = "Prijmeni",
                 IsDeleted = false,
@@ -113,7 +112,6 @@ namespace DAIS.ConsoleClient
         {
             IssueWorkflowDTO workflow = new IssueWorkflowDTO
             {
-                Id = 2,
                 CreatedAt = DateTime.Now,
                 IssueId = 1,
                 IssueStatusId = 2,
@@ -135,9 +133,8 @@ namespace DAIS.ConsoleClient
             CommentDTO comment = new CommentDTO
             {
                 CreatedAt = DateTime.Now,
-                Id = 2,
                 IsDeleted = false,
-                IssueId = 1,
+                IssueId = 4,
                 Text = "Some comment's text",
                 UserId = 1,
                 CommentId = null,
@@ -193,16 +190,57 @@ namespace DAIS.ConsoleClient
                 WriteLine($"{status.Id} - {status.IssueType}");
         }
 
+        private void Init()
+        {
+            TransactionScope transaction = null;
+            try
+            {
+                transaction = new TransactionScope();
+
+                issueStatusRepo.Insert(new IssueStatusDTO { IssueType = IssueStatus.Open });
+                issueStatusRepo.Insert(new IssueStatusDTO { IssueType = IssueStatus.InProgress });
+                issueStatusRepo.Insert(new IssueStatusDTO { IssueType = IssueStatus.CodeReview });
+                issueStatusRepo.Insert(new IssueStatusDTO { IssueType = IssueStatus.Testing });
+                issueStatusRepo.Insert(new IssueStatusDTO { IssueType = IssueStatus.Closed });
+
+                issueTypeRepo.Insert(new IssueTypeDTO { IssueType = IssueType.Epic });
+                issueTypeRepo.Insert(new IssueTypeDTO { IssueType = IssueType.Task });
+
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Epic, IssueStatus = IssueStatus.Open });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Epic, IssueStatus = IssueStatus.InProgress });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Epic, IssueStatus = IssueStatus.CodeReview });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Epic, IssueStatus = IssueStatus.Testing });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Epic, IssueStatus = IssueStatus.Closed });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Task, IssueStatus = IssueStatus.Open });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Task, IssueStatus = IssueStatus.InProgress });
+                issueTypeIssueStatusRepo.Insert(new IssueTypeIssueStatusDTO { IssueType = IssueType.Task, IssueStatus = IssueStatus.Closed });
+
+                issuePriorityRepo.Insert(new IssuePriorityDTO { IssuePriority = IssuePriority.Critical });
+                issuePriorityRepo.Insert(new IssuePriorityDTO { IssuePriority = IssuePriority.HiPrio });
+                issuePriorityRepo.Insert(new IssuePriorityDTO { IssuePriority = IssuePriority.Normal });
+                issuePriorityRepo.Insert(new IssuePriorityDTO { IssuePriority = IssuePriority.NotImportant });
+
+                transaction.Complete();
+            }
+            catch (Exception ex)
+            {
+                WriteLine("Init failed (most probably it has been already done)");
+            }
+            finally
+            {
+                transaction?.Dispose();
+            }
+        }
+
         static void Main(string[] args)
         {
             using (Program p = new Program())
             {
-                //p.InsertIssueType();
+                // INIT
+                p.Init();
+
                 //p.InsertUser();
-                //p.InsertStatusType();
-                //p.InsertIssueTypeIssueStatus();
                 //p.IssueInsert();
-                //p.InsertIssueWorkflow();
                 //p.InsertComment();
 
                 //p.InsertComment();
@@ -214,7 +252,9 @@ namespace DAIS.ConsoleClient
                 //p.SelectComments();
                 //p.SelectStatuses();
 
-                var users = p.userRepo.Select().ToArray();
+                //var users = p.userRepo.Select().ToArray();
+                //var users = p.userRepo.MostActiveUsersForLastNDays(2).ToArray();
+                var nonOpenIssues = p.issueRepo.NonOpenIssuesForLastNDays(2).ToArray();
             }
         }
     }

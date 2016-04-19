@@ -8,8 +8,9 @@ namespace DAIS.ORM.DTO
     {
         Open = 1,
         InProgress = 2,
-        Closed = 3,
+        CodeReview = 3,
         Testing = 4,
+        Closed = 5,
     }
 
     [TableName("issue_status")]
@@ -43,6 +44,9 @@ namespace DAIS.ORM.DTO
                         break;
                     case IssueStatus.Testing:
                         Name = "Testing";
+                        break;
+                    case IssueStatus.CodeReview:
+                        Name = "Code Review";
                         break;
                     default:
                         Name = "Not defined";

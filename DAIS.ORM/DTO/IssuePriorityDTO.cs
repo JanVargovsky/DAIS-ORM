@@ -36,15 +36,19 @@ namespace DAIS.ORM.DTO
                 {
                     case IssuePriority.HiPrio:
                         Name = "Hi-Prio";
+                        Value = 10;
                         break;
                     case IssuePriority.Critical:
                         Name = "Critical";
+                        Value = 30;
                         break;
                     case IssuePriority.Normal:
                         Name = "Normal";
+                        Value = 50;
                         break;
                     case IssuePriority.NotImportant:
                         Name = "Not important";
+                        Value = 100;
                         break;
                     default:
                         Name = "Not defined";

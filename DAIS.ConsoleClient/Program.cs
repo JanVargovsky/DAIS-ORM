@@ -254,7 +254,15 @@ namespace DAIS.ConsoleClient
 
                 //var users = p.userRepo.Select().ToArray();
                 //var users = p.userRepo.MostActiveUsersForLastNDays(2).ToArray();
-                var nonOpenIssues = p.issueRepo.NonOpenIssuesForLastNDays(2).ToArray();
+
+                //var issueBefore = p.issueRepo.Select(4);
+                //bool updated = p.issueRepo.UpdateIssueStatus(4,1,"Testing", "Ready to testing.", TimeSpan.FromHours(7));
+                //var issueAfter = p.issueRepo.Select(4);
+                //var lastComment = p.commentRepo.Select().Last();
+                //var lastWorkflow = p.issueWorkflowRepo.Select().Last();
+
+                bool logged = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1));
+                bool logged2 = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1), "some test comment");
             }
         }
     }

@@ -2,6 +2,7 @@
 using DAIS.ORM.Framework;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Text;
 
 namespace DAIS.ORM.Repositories
@@ -40,6 +41,76 @@ namespace DAIS.ORM.Repositories
                         }
                         return results;
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
+        }
+
+        public bool UpdateIssueStatus(long issueId, long userId, string statusName, string commentText, TimeSpan spentTime)
+        {
+            return UpdateIssueStatus(issueId, userId, statusName, commentText, spentTime.Ticks);
+        }
+
+        public bool UpdateIssueStatus(long issueId, long userId, string statusName, string commentText, long spentTime)
+        {
+            try
+            {
+                database.Open();
+                using (var command = database.CreateSqlCommand("UpdateIssueStatus"))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@issueId", issueId);
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@statusName", statusName);
+                    command.Parameters.AddWithValue("@commentText", commentText);
+                    command.Parameters.AddWithValue("@spentTime", spentTime);
+
+                    int result = command.ExecuteNonQuery();
+
+                    return result == 3;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
+        }
+
+        public bool LogWork(long issueId, long userId, TimeSpan spentTime, string commentText = null)
+        {
+            return LogWork(issueId, userId, spentTime.Ticks, commentText);
+        }
+
+        public bool LogWork(long issueId, long userId, long spentTime, string commentText = null)
+        {
+            bool containsComment = !string.IsNullOrEmpty(commentText);
+
+            try
+            {
+                database.Open();
+                using (var command = database.CreateSqlCommand("LogWorkOnIssue"))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@issueId", issueId);
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@spentTime", spentTime);
+                    if (containsComment)
+                        command.Parameters.AddWithValue("@commentText", commentText);
+
+                    int result = command.ExecuteNonQuery();
+
+                    return result == 3 && containsComment || result == 2 && !containsComment;
                 }
             }
             catch (Exception ex)

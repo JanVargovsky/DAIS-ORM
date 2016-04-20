@@ -261,8 +261,33 @@ namespace DAIS.ConsoleClient
                 //var lastComment = p.commentRepo.Select().Last();
                 //var lastWorkflow = p.issueWorkflowRepo.Select().Last();
 
-                bool logged = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1));
-                bool logged2 = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1), "some test comment");
+                //bool logged = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1));
+                //bool logged2 = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1), "some test comment");
+
+
+                //for (int i = 0; i < 3; i++)
+                //{
+                //    IssueDTO issue = new IssueDTO
+                //    {
+                //        IssueId = 12 + i,
+                //        Summary = "test issue",
+                //        Description = "test issue",
+                //        Created = DateTime.Now.AddDays(10),
+                //        LastUpdatedAt = null,
+                //        RemainingTimeTicks = TimeSpan.FromMinutes(2).Ticks,
+                //        EstimatedTime = TimeSpan.FromMinutes(2).Ticks,
+                //        IsDeleted = false,
+                //        IssuePriorityId = 1,
+                //        IssueStatusId = 1,
+                //        IssueTypeId = 1,
+                //        Assignee = null,
+                //        CreatedBy = 1,
+                //    };
+
+                //    p.issueRepo.Insert(issue);
+                //}
+
+                p.issueRepo.CloseIssues(12, 1, "Its already fixed.");
             }
         }
     }

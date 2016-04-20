@@ -122,6 +122,33 @@ namespace DAIS.ORM.Repositories
                 database.Close();
             }
         }
+
+        public bool CloseIssues(long issueId, long userId, string commentText)
+        {
+            try
+            {
+                database.Open();
+                using (var command = database.CreateSqlCommand("CloseIssues"))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@issueId", issueId);
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@commentText", commentText);
+
+                    int result = command.ExecuteNonQuery();
+
+                    return result > 2;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                database.Close();
+            }
+        }
     }
 
     public class NonOpenIssue

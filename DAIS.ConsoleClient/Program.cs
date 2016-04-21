@@ -36,160 +36,6 @@ namespace DAIS.ConsoleClient
 
         public void Dispose() => db.Dispose();
 
-        private void IssueInsert()
-        {
-            IssueDTO issue = new IssueDTO
-            {
-                Summary = "Summary #3 ...",
-                Description = "Description #3 ...",
-                Created = DateTime.Now.AddDays(10),
-                LastUpdatedAt = null,
-                RemainingTimeTicks = TimeSpan.FromMinutes(2).Ticks,
-                EstimatedTime = TimeSpan.FromMinutes(2).Ticks,
-                IsDeleted = false,
-                IssueId = null,
-                IssuePriorityId = 1,
-                IssueStatusId = 1,
-                IssueTypeId = 1,
-                Assignee = null,
-                CreatedBy = 1,
-            };
-
-            issueRepo.Insert(issue);
-        }
-
-        private void InsertIssueType()
-        {
-            IssueTypeDTO issueType = new IssueTypeDTO
-            {
-                IsDeleted = false,
-                Name = "Epic",
-            };
-
-            issueTypeRepo.Insert(issueType);
-        }
-
-        private void InsertStatusType()
-        {
-            IssueStatusDTO issueType = new IssueStatusDTO
-            {
-                IsDeleted = false,
-                IssueType = IssueStatus.Testing,
-            };
-
-            issueStatusRepo.Insert(issueType);
-        }
-
-        private void InsertUser()
-        {
-            UserDTO user = new UserDTO
-            {
-                FirstName = "Jmeno",
-                Surname = "Prijmeni",
-                IsDeleted = false,
-                Password = Encoding.ASCII.GetBytes("123456"),
-                ShowEmail = false,
-                Email = "jmeno.prijmeni@domena.x",
-                UserName = "username",
-            };
-
-            userRepo.Insert(user);
-        }
-
-        private void InsertIssueTypeIssueStatus()
-        {
-            IssueTypeIssueStatusDTO typeStatus = new IssueTypeIssueStatusDTO
-            {
-                IssueType = IssueType.Task,
-                IssueStatus = IssueStatus.Testing,
-            };
-
-
-            issueTypeIssueStatusRepo.Insert(typeStatus);
-        }
-
-        private void InsertIssueWorkflow()
-        {
-            IssueWorkflowDTO workflow = new IssueWorkflowDTO
-            {
-                CreatedAt = DateTime.Now,
-                IssueId = 1,
-                IssueStatusId = 2,
-                TimeSpent = TimeSpan.FromHours(1.5d),
-                UserId = 1,
-            };
-
-
-            issueWorkflowRepo.Insert(workflow);
-        }
-
-        private void DeleteWorkflow()
-        {
-            issueWorkflowRepo.Delete(1);
-        }
-
-        private void InsertComment()
-        {
-            CommentDTO comment = new CommentDTO
-            {
-                CreatedAt = DateTime.Now,
-                IsDeleted = false,
-                IssueId = 4,
-                Text = "Some comment's text",
-                UserId = 1,
-                CommentId = null,
-            };
-
-
-            commentRepo.Insert(comment);
-        }
-
-        private void DeleteComment()
-        {
-            commentRepo.Delete(1);
-        }
-
-        private void UpdateComment()
-        {
-            CommentDTO comment = new CommentDTO
-            {
-                CreatedAt = DateTime.Now,
-                Id = 1,
-                IsDeleted = false,
-                IssueId = 1,
-                Text = "Some comment's text - updated at " + DateTime.Now.ToShortTimeString(),
-                UserId = 1,
-                CommentId = null,
-            };
-            commentRepo.Update(comment);
-        }
-
-        private void PrintComment(params CommentDTO[] comments)
-        {
-            foreach (var c in comments)
-                WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
-        }
-
-        private void SelectComment()
-        {
-            CommentDTO c = commentRepo.Select(1);
-            WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
-        }
-
-        private void SelectComments()
-        {
-            var comments = commentRepo.Select();
-            foreach (var c in comments)
-                WriteLine($"Id={c.Id}, UserId={c.UserId}, CreatedAt={c.CreatedAt}, Text={c.Text}, IssueId={c.IssueId}");
-        }
-
-        private void SelectStatuses()
-        {
-            var statuses = issueStatusRepo.Select();
-            foreach (var status in statuses)
-                WriteLine($"{status.Id} - {status.IssueType}");
-        }
-
         private void Init()
         {
             TransactionScope transaction = null;
@@ -221,6 +67,7 @@ namespace DAIS.ConsoleClient
                 issuePriorityRepo.Insert(new IssuePriorityDTO { IssuePriority = IssuePriority.NotImportant });
 
                 transaction.Complete();
+                WriteLine("Seed done");
             }
             catch (Exception ex)
             {
@@ -236,58 +83,81 @@ namespace DAIS.ConsoleClient
         {
             using (Program p = new Program())
             {
-                // INIT
-                p.Init();
+                // fills database with seed data
+                //p.Init();
 
-                //p.InsertUser();
-                //p.IssueInsert();
-                //p.InsertComment();
+                // INSERT USER
+                UserDTO user = new UserDTO
+                {
+                    FirstName = "Jmeno",
+                    Surname = "Prijmeni",
+                    Password = Encoding.ASCII.GetBytes("123456"),
+                    Email = "jmeno.prijmeni@domena.x",
+                    UserName = "username",
+                };
+                bool insertedUser = p.userRepo.Insert(user);
 
-                //p.InsertComment();
-                //p.DeleteComment();
-                //p.DeleteWorkflow();
+                // INSERT ISSUE
+                IssueDTO issue = new IssueDTO
+                {
+                    CreatedBy = user.Id,
+                    Summary = "Summary ...",
+                    Description = "Description ...",
+                    Created = DateTime.Now.AddDays(-10),
+                    LastUpdatedAt = null,
+                    RemainingTimeTicks = TimeSpan.FromHours(2).Ticks,
+                    EstimatedTime = TimeSpan.FromHours(2).Ticks,
+                    IssuePriorityId = 1,
+                    IssueStatusId = 1,
+                    IssueTypeId = 1,
+                };
+                bool insertedIssue = p.issueRepo.Insert(issue);
 
-                //p.UpdateComment();
-                //p.SelectComment();
-                //p.SelectComments();
-                //p.SelectStatuses();
+                // INSERT WORKFLOW
+                IssueWorkflowDTO workflow = new IssueWorkflowDTO
+                {
+                    CreatedAt = DateTime.Now,
+                    IssueId = issue.Id,
+                    UserId = user.Id,
+                    IssueStatusId = 2,
+                    TimeSpent = TimeSpan.FromHours(1.5d),
+                };
+                bool insertedWorkflow = p.issueWorkflowRepo.Insert(workflow);
 
-                //var users = p.userRepo.Select().ToArray();
-                //var users = p.userRepo.MostActiveUsersForLastNDays(2).ToArray();
+                // INSERT COMMENT
+                CommentDTO comment = new CommentDTO
+                {
+                    CreatedAt = DateTime.Now,
+                    IssueId = issue.Id,
+                    UserId = user.Id,
+                    Text = "Some comment's text",
+                };
+                bool insertedComment = p.commentRepo.Insert(comment);
 
-                //var issueBefore = p.issueRepo.Select(4);
-                //bool updated = p.issueRepo.UpdateIssueStatus(4,1,"Testing", "Ready to testing.", TimeSpan.FromHours(7));
-                //var issueAfter = p.issueRepo.Select(4);
-                //var lastComment = p.commentRepo.Select().Last();
-                //var lastWorkflow = p.issueWorkflowRepo.Select().Last();
+                // RPC
+                var mostActiveUsers = p.userRepo.MostActiveUsersForLastNDays(2).ToArray(); // fnc1
+                var nonOpenIssues = p.issueRepo.NonOpenIssuesForLastNDays(2).ToArray(); // fnc2
+                var issueUpdated = p.issueRepo.UpdateIssueStatus(issue.Id, user.Id, "Testing", "Ready to testing.", TimeSpan.FromHours(7)); // fnc3
+                var loggedWOrk = p.issueRepo.LogWork(issue.Id, user.Id, TimeSpan.FromMinutes(1), "some test comment"); // fnc4
+                var closed = p.issueRepo.CloseIssues(issue.Id, user.Id, "Its already fixed."); // fnc5
 
-                //bool logged = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1));
-                //bool logged2 = p.issueRepo.LogWork(7, 1, TimeSpan.FromMinutes(1), "some test comment");
+                // Selects
+                var allComments = p.commentRepo.Select().ToArray();
+                var allIssuePriorities = p.issuePriorityRepo.Select().ToArray();
+                var allIssues = p.issueRepo.Select().ToArray();
+                var allIssueStatuses = p.issueStatusRepo.Select().ToArray();
+                var allIssueTypes = p.issueTypeRepo.Select().ToArray();
+                var allIssueTypeIssueStatuses = p.issueTypeIssueStatusRepo.Select().ToArray();
+                var allIssueWorkflows = p.issueWorkflowRepo.Select().ToArray();
+                var allUsers = p.userRepo.Select().ToArray();
 
-
-                //for (int i = 0; i < 3; i++)
-                //{
-                //    IssueDTO issue = new IssueDTO
-                //    {
-                //        IssueId = 12 + i,
-                //        Summary = "test issue",
-                //        Description = "test issue",
-                //        Created = DateTime.Now.AddDays(10),
-                //        LastUpdatedAt = null,
-                //        RemainingTimeTicks = TimeSpan.FromMinutes(2).Ticks,
-                //        EstimatedTime = TimeSpan.FromMinutes(2).Ticks,
-                //        IsDeleted = false,
-                //        IssuePriorityId = 1,
-                //        IssueStatusId = 1,
-                //        IssueTypeId = 1,
-                //        Assignee = null,
-                //        CreatedBy = 1,
-                //    };
-
-                //    p.issueRepo.Insert(issue);
-                //}
-
-                p.issueRepo.CloseIssues(12, 1, "Its already fixed.");
+                // DELETE INSERTED ROWS
+                // Note#1: Its just a soft delete
+                // Note#2: Except that rows which were created by internal procedures/functions
+                bool deleted = new bool[]{ p.commentRepo.Delete(comment.Id),
+                p.issueWorkflowRepo.Delete(workflow.Id),
+                p.issueRepo.Delete(issue.Id),
+                p.userRepo.Delete(user.Id) }.All(t => t);
             }
         }
     }

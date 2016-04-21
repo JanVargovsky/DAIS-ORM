@@ -58,7 +58,7 @@ namespace DAIS.ConsoleClient
         {
             return new SqlConnectionStringBuilder
             {
-                DataSource = @"dbsys.cs.vsb.cz\STUDENT",
+                DataSource = @"dbsys.cs.vsb.cz\STUDENT_SQLS2014",
                 InitialCatalog = @"var0065",
                 IntegratedSecurity = false,
                 UserID = ConfigurationManager.AppSettings["user"],

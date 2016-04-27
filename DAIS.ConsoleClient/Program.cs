@@ -1,4 +1,5 @@
-﻿using DAIS.ORM.DTO;
+﻿using DAIS.ORM;
+using DAIS.ORM.DTO;
 using DAIS.ORM.Framework;
 using DAIS.ORM.Repositories;
 using System;
@@ -105,8 +106,8 @@ namespace DAIS.ConsoleClient
                     Description = "Description ...",
                     Created = DateTime.Now.AddDays(-10),
                     LastUpdatedAt = null,
-                    RemainingTimeTicks = TimeSpan.FromHours(2).Ticks,
-                    EstimatedTime = TimeSpan.FromHours(2).Ticks,
+                    RemainingTime = TimeSpan.FromHours(2),
+                    EstimatedTime = TimeSpan.FromHours(2),
                     IssuePriorityId = 1,
                     IssueStatusId = 1,
                     IssueTypeId = 1,

@@ -25,7 +25,7 @@ namespace DAIS.ORM.DTO
         public long RemainingTimeTicks { get; set; }
 
         [Column("time_estimated")]
-        public long EstimatedTime { get; set; }
+        public long EstimatedTimeTicks { get; set; }
 
         [Column("deleted", DeleteIndicator = true)]
         public bool IsDeleted { get; set; }
@@ -51,7 +51,7 @@ namespace DAIS.ORM.DTO
         public long IssuePriorityId { get; set; }
 
         // Converters
-        public TimeSpan TimeRemaining
+        public TimeSpan RemainingTime
         {
             get
             {
@@ -60,6 +60,18 @@ namespace DAIS.ORM.DTO
             set
             {
                 RemainingTimeTicks = value.Ticks;
+            }
+        }
+
+        public TimeSpan EstimatedTime
+        {
+            get
+            {
+                return TimeSpan.FromTicks(EstimatedTimeTicks);
+            }
+            set
+            {
+                EstimatedTimeTicks = value.Ticks;
             }
         }
     }

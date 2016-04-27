@@ -5,7 +5,7 @@ using System.Configuration;
 using System.Data.Common;
 using System.Data.SqlClient;
 
-namespace DAIS.ConsoleClient
+namespace DAIS.ORM
 {
     interface ICreate<T>
     {

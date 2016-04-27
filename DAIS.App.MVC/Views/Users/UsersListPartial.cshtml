@@ -1,0 +1,11 @@
+﻿@model IEnumerable<DAIS.App.MVC.Models.UserModel>
+
+<div class="form-group">
+    <label for="selectedUser">Selected user:</label>
+    <select id="selectedUser" class="form-control">
+        @foreach (var user in Model)
+        {
+            <option value="@user.Id">@user.FullName</option>
+        }
+    </select>
+</div>

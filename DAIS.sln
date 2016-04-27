@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIS.ORM.Framework", "DAIS.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIS.ConsoleClient", "DAIS.ConsoleClient\DAIS.ConsoleClient.csproj", "{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAIS.App.MVC", "DAIS.App.MVC\DAIS.App.MVC.csproj", "{D3E285D5-480C-410F-8AEE-52DB90B9340A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EEAA2AEB-3627-4A8C-8B31-1E5632B00218}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3E285D5-480C-410F-8AEE-52DB90B9340A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3E285D5-480C-410F-8AEE-52DB90B9340A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3E285D5-480C-410F-8AEE-52DB90B9340A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3E285D5-480C-410F-8AEE-52DB90B9340A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

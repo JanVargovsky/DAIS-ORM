@@ -74,5 +74,23 @@ namespace DAIS.ORM.DTO
                 EstimatedTimeTicks = value.Ticks;
             }
         }
+
+        public IssuePriority IssuePriority
+        {
+            get { return (IssuePriority)Enum.ToObject(typeof(IssuePriority), IssuePriorityId); }
+            set { IssuePriorityId = (long)value; }
+        }
+
+        public IssueType IssueType
+        {
+            get { return (IssueType)Enum.ToObject(typeof(IssueType), IssueTypeId); }
+            set { IssueTypeId = (long)value; }
+        }
+
+        public IssueStatus IssueStatus
+        {
+            get { return (IssueStatus)Enum.ToObject(typeof(IssueStatus), IssueStatusId); }
+            set { IssueStatusId = (long)value; }
+        }
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>Issue Tracking</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 </head>
@@ -19,17 +19,18 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("IssueTracking", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                <a href="@Url.Action("Index", "Home")" class="navbar-brand"><span class="glyphicon glyphicon-heart-empty"></span> Issue Tracking</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                    <li><a href="@Url.Action("Change", "User")"><span class="glyphicon glyphicon-user"></span> Change User</a></li>
+                    <li><a href="@Url.Action("List", "Issue")"><span class="glyphicon glyphicon-tasks"></span> Issues</a></li>
                     <li><a href="@Url.Action("Create", "Issue")"><span class="glyphicon glyphicon-plus"></span> Create Issue</a></li>
                 </ul>
                 @if (Session["SelectedUser"] != null)
                 {
                     <div class="pull-right">
-                        <label id="selectedUser" class="pull-right"><span class="glyphicon glyphicon-user"></span> @(((DAIS.App.MVC.Models.UserModel)Session["SelectedUser"]).FullName)</label>
+                        <label id="selectedUser" class="pull-right"><span class="glyphicon glyphicon-user"></span> @(((UserModel)Session["SelectedUser"]).FullName)</label>
                     </div>
                 }
             </div>
@@ -41,11 +42,11 @@
                 <div id="alerts">
                     @if (ViewBag.Alerts != null)
                     {
-                        @Html.Partial("Alerts", (DAIS.App.MVC.Models.AlertsListModel)ViewBag.Alerts)
+                        @Html.Partial("Alerts", (AlertsListModel)ViewBag.Alerts)
                     }
                     @if (TempData["Alerts"] != null)
                     {
-                        @Html.Partial("Alerts", (DAIS.App.MVC.Models.AlertsListModel)TempData["Alerts"])
+                        @Html.Partial("Alerts", (AlertsListModel)TempData["Alerts"])
                     }
                 </div>
                 @RenderBody()
@@ -57,7 +58,7 @@
 
     </main>
     <footer class="container-fluid">
-        <p class="text-center">&copy; Jan Vargovský<br />Created as project to Database and Information Systems at VSB-TUO @DateTime.Now.Year</p>
+        <p class="text-center">&copy; Jan Vargovský<br />Created as project to Database and Information Systems at <a href="http://katedrainformatiky.cz/">VSB-TUO</a></p>
     </footer>
 
     @Scripts.Render("~/bundles/jquery")

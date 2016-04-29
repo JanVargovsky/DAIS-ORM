@@ -30,6 +30,7 @@ namespace DAIS.App.MVC.Controllers
             }
         }
 
+        #region FUTURE
 #if FUTURE
         // TODO: Use proper IoC
         public ControllerBase(IssueRepository issueRepository,
@@ -51,6 +52,7 @@ namespace DAIS.App.MVC.Controllers
             this.issuePriorityRepository = issuePriorityRepository;
         }
 #endif
+        #endregion
 
         public ControllerBase()
         {
@@ -67,6 +69,9 @@ namespace DAIS.App.MVC.Controllers
         protected override void OnException(ExceptionContext filterContext)
         {
             // TODO: Log
+
+            if (filterContext.HttpContext.Request.IsLocal)
+                return;
 
             filterContext.Controller.TempData["Alerts"] = new AlertsListModel(AlertModelFactory.Instance.Create(AlertCode.Error));
 

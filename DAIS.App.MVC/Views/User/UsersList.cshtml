@@ -1,0 +1,16 @@
+﻿@model ChangeUserModel
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <div class="form">
+        <h2>Change selected user</h2>
+        <hr />
+        <div class="form-group">
+            @Html.DropDownList(nameof(Model.UserId), Model.Users, null, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Change user" class="btn btn-primary" />
+        </div>
+    </div>
+}

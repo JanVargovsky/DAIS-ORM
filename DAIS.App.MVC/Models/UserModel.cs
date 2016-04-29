@@ -1,4 +1,7 @@
-﻿namespace DAIS.App.MVC.Models
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace DAIS.App.MVC.Models
 {
     public class UserModel
     {
@@ -9,5 +12,14 @@
         public string LastName { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
+    }
+
+    public class ChangeUserModel
+    {
+        public long? CurrentUserId { get; set; }
+
+        public long? UserId { get; set; }
+
+        public IEnumerable<SelectListItem> Users { get; set; }
     }
 }

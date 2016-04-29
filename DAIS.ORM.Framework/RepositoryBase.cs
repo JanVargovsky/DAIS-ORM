@@ -198,14 +198,21 @@ namespace DAIS.ORM.Framework
             try
             {
                 var attributes = modelType.GetAttributeNameValues();
+                var deletedAttribute = attributes.FirstOrDefault(a => a.DeleteIndicator);
 
                 StringBuilder query = new StringBuilder()
                     .AppendLine($"SELECT {attributes.ToSqlNameParams()}")
-                    .AppendLine($"FROM [{tableName}];");
+                    .AppendLine($"FROM [{tableName}]");
+
+                if (deletedAttribute != null)
+                    query.AppendLine($"WHERE {deletedAttribute.ToSqlUpdateParam()}");
 
                 database.Open();
                 using (var command = database.CreateSqlCommand(query.ToString()))
                 {
+                    if (deletedAttribute != null)
+                        command.Parameters.AddWithValue(deletedAttribute.ParameterName, 0);
+
                     using (var reader = command.ExecuteReader())
                     {
                         // TODO: Cache property info

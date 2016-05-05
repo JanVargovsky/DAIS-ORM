@@ -162,5 +162,46 @@ namespace DAIS.App.MVC.Controllers
                 return IssueEdit(issue.Id);
             }
         }
+
+        [Route("Issue/CloseAll/{id}")]
+        public ActionResult IssueCloseAll(long id)
+        {
+            var model = new IssueCloseModel
+            {
+                IssueId = id,
+            };
+            return View(nameof(IssueCloseAll), model);
+        }
+
+        [Route("Issue/CloseAll/{id}")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult IssueCloseAll(IssueCloseModel model)
+        {
+            if (SelectedUser == null)
+            {
+                TempData["Alerts"] = new AlertsListModel(AlertModelFactory.Instance.Create(AlertCode.NotSelectedUser));
+                return View(nameof(IssueCloseAll), model);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Alerts = new AlertsListModel(AlertModelFactory.Instance.Create(AlertCode.InvalidFormData));
+                return View(nameof(IssueCloseAll), model);
+            }
+
+            try
+            {
+                issueRepository.CloseIssues(model.IssueId, SelectedUser.Id, model.Reason);
+
+                ViewBag.Alerts = new AlertsListModel(new AlertModel { AlertType = AlertType.Success, ShowClose = true, Text = "Closed" });
+                return View(nameof(IssueCloseAll), model);
+            }
+            catch (Exception ex)
+            {
+                ViewBag.Alerts = new AlertsListModel(AlertModelFactory.Instance.Create(AlertCode.Error));
+                return View(nameof(IssueCloseAll), model);
+            }
+        }
     }
 }

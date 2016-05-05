@@ -196,6 +196,7 @@
     <Content Include="Views\Issue\IssuesList.cshtml" />
     <Content Include="Views\Issue\IssueDetail.cshtml" />
     <Content Include="Views\Issue\IssueEdit.cshtml" />
+    <Content Include="Views\Issue\IssueCloseAll.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

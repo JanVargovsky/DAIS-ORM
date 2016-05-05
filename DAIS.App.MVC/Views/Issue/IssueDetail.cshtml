@@ -69,7 +69,9 @@
         </dd>
 
     </dl>
+    @Html.ActionLink("Close all", "CloseAll", new { id = Model.Id }, new { @class = "btn btn-danger" })
 </div>
 <p>
+    @Html.ActionLink("Back to List", "List") |
     @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
 </p>
